@@ -9,6 +9,7 @@ import { SnippetList } from './components/SnippetList';
 import { SnippetForm } from './components/SnippetForm';
 import { FavoritesPage } from './components/FavoritesPage';
 import { Settings } from './components/Settings';
+import { CmdCommands } from './components/CmdCommands';
 import { CodeSnippet, Comment, Review, Tag, Category } from './types';
 import { storage } from './utils/storage';
 import { GitHubGistAPI } from './utils/thirdParty';
@@ -810,7 +811,7 @@ function App() {
               onDeleteSnippet={handleDeleteSnippet}
               onToggleFavorite={handleToggleFavorite}
               onExportSnippet={handleExportSnippet}
-              onCommentsUpdate={setComments}
+              onCommentsUpdate={(comments: Comment[]) => setComments(comments)}
             />
           )}
           
@@ -824,16 +825,20 @@ function App() {
               onDeleteSnippet={handleDeleteSnippet}
               onToggleFavorite={handleToggleFavorite}
               onExportSnippet={handleExportSnippet}
-              onCommentsUpdate={setComments}
+              onCommentsUpdate={(comments: Comment[]) => setComments(comments)}
             />
+          )}
+          
+          {currentPage === 'commands' && (
+            <CmdCommands />
           )}
           
           {currentPage === 'settings' && (
             <Settings
               categories={categories}
               onUpdateCategories={setCategories}
-              onExportData={handleExportData}
-              onImportData={handleImportData}
+              onExportData={async () => await handleExportData()}
+              onImportData={async (data: string) => await handleImportData(data)}
             />
           )}
         </Layout>

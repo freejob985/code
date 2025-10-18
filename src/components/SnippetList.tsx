@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Search, Plus, Filter, Star, Globe, Lock, Eye, Edit, Trash2, Upload, Download, Copy, Share, ExternalLink, ChevronLeft, ChevronRight, X } from 'lucide-react';
-import { CodeSnippet, SearchFilters, Tag, Category } from '../types';
+import { CodeSnippet, SearchFilters, Tag, Category, Comment } from '../types';
 import { CodeEditor } from './CodeEditor';
 import { TagInput } from './TagInput';
 import { ContextMenu, useContextMenu } from './ContextMenu';

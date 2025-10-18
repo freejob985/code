@@ -1,5 +1,5 @@
 import React from 'react';
-import { Code2, Home, Settings, BarChart3, Moon, Sun, Monitor, Star } from 'lucide-react';
+import { Code2, Settings, BarChart3, Moon, Sun, Monitor, Star, Terminal } from 'lucide-react';
 import { useTheme } from './ThemeProvider';
 
 interface LayoutProps {
@@ -9,12 +9,13 @@ interface LayoutProps {
 }
 
 export function Layout({ children, currentPage, onNavigate }: LayoutProps) {
-  const { theme, setTheme, actualTheme } = useTheme();
+  const { theme, setTheme } = useTheme();
 
   const navigation = [
     { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
     { id: 'snippets', label: 'Code Snippets', icon: Code2 },
     { id: 'favorites', label: 'Favorites', icon: Star },
+    { id: 'commands', label: 'CMD Commands', icon: Terminal },
     { id: 'settings', label: 'Settings', icon: Settings },
   ];
 
