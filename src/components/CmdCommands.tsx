@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Terminal, Search, Plus, Trash2, Bot, XCircle } from 'lucide-react';
+import { Terminal, Search, Plus, Trash2, Bot, XCircle, Code, Database, Globe, Package, Settings, Zap, FileText, GitBranch, Server, Cpu } from 'lucide-react';
 import { CmdCommand } from '../types';
 import { CMD_CATEGORIES, copyToClipboard } from '../utils/cmdCommands';
 import { storage } from '../utils/storage';
@@ -30,6 +30,67 @@ export function CmdCommands({ onClose }: CmdCommandsProps) {
     icon: '⚡',
     color: '#8B5CF6'
   });
+
+  // Function to get appropriate icon for command type
+  const getCommandIcon = (command: string, category: string) => {
+    const cmd = command.toLowerCase();
+    
+    // Database related commands
+    if (cmd.includes('mysql') || cmd.includes('database') || cmd.includes('migrate') || cmd.includes('seed')) {
+      return <Database className="h-4 w-4" />;
+    }
+    
+    // Git related commands
+    if (cmd.includes('git') || cmd.includes('commit') || cmd.includes('push') || cmd.includes('pull') || cmd.includes('branch')) {
+      return <GitBranch className="h-4 w-4" />;
+    }
+    
+    // Package management
+    if (cmd.includes('npm') || cmd.includes('yarn') || cmd.includes('pip') || cmd.includes('composer') || cmd.includes('install')) {
+      return <Package className="h-4 w-4" />;
+    }
+    
+    // Server/Development
+    if (cmd.includes('serve') || cmd.includes('start') || cmd.includes('dev') || cmd.includes('run')) {
+      return <Server className="h-4 w-4" />;
+    }
+    
+    // File operations
+    if (cmd.includes('create') || cmd.includes('make') || cmd.includes('generate') || cmd.includes('file')) {
+      return <FileText className="h-4 w-4" />;
+    }
+    
+    // Configuration
+    if (cmd.includes('config') || cmd.includes('setup') || cmd.includes('init')) {
+      return <Settings className="h-4 w-4" />;
+    }
+    
+    // Web related
+    if (cmd.includes('http') || cmd.includes('url') || cmd.includes('web') || cmd.includes('browser')) {
+      return <Globe className="h-4 w-4" />;
+    }
+    
+    // Code related
+    if (cmd.includes('code') || cmd.includes('build') || cmd.includes('compile')) {
+      return <Code className="h-4 w-4" />;
+    }
+    
+    // Default based on category
+    switch (category) {
+      case 'laravel':
+        return <Zap className="h-4 w-4" />;
+      case 'django':
+        return <Cpu className="h-4 w-4" />;
+      case 'react':
+        return <Globe className="h-4 w-4" />;
+      case 'vue':
+        return <Globe className="h-4 w-4" />;
+      case 'node':
+        return <Server className="h-4 w-4" />;
+      default:
+        return <Terminal className="h-4 w-4" />;
+    }
+  };
 
   // Load custom commands and categories on component mount
   useEffect(() => {
@@ -288,8 +349,8 @@ export function CmdCommands({ onClose }: CmdCommandsProps) {
         ))}
       </div>
 
-      {/* Commands Grid - Only Commands with Tooltips */}
-      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
+      {/* Commands Grid - Uniform Buttons with Icons */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
         {(() => {
           let allCommands: CmdCommand[] = [];
           
@@ -314,18 +375,28 @@ export function CmdCommands({ onClose }: CmdCommandsProps) {
             >
               <button
                 onClick={() => handleCopyCommand(command.command)}
-                className="w-full p-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-left"
+                className="w-full h-24 p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-blue-300 dark:hover:border-blue-600 transition-all duration-200 text-left flex flex-col justify-center items-start space-y-2 shadow-sm hover:shadow-md"
                 title={command.description}
               >
-                <code className="block text-sm font-mono text-gray-900 dark:text-gray-100 break-all">
-                  {command.command}
-                </code>
+                <div className="flex items-center space-x-2 w-full">
+                  <div className="text-blue-600 dark:text-blue-400 flex-shrink-0">
+                    {getCommandIcon(command.command, command.category)}
+                  </div>
+                  <code className="text-xs font-mono text-gray-900 dark:text-gray-100 truncate flex-1">
+                    {command.command}
+                  </code>
+                </div>
+                {command.description && (
+                  <p className="text-xs text-gray-500 dark:text-gray-400 truncate w-full">
+                    {command.description}
+                  </p>
+                )}
               </button>
               
               {command.isCustom && (
                 <button
                   onClick={() => handleDeleteCustomCommand(command.id)}
-                  className="absolute -top-2 -right-2 p-1 bg-red-600 hover:bg-red-700 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                  className="absolute -top-2 -right-2 p-1.5 bg-red-600 hover:bg-red-700 text-white rounded-full opacity-0 group-hover:opacity-100 transition-all duration-200 shadow-lg hover:shadow-xl"
                 >
                   <Trash2 className="h-3 w-3" />
                 </button>
