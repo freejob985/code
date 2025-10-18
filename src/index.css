@@ -1,0 +1,382 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom scrollbar styles */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 #f1f5f9;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Dark mode scrollbar */
+.dark .custom-scrollbar {
+  scrollbar-color: #4b5563 #1f2937;
+}
+
+.dark .custom-scrollbar::-webkit-scrollbar-track {
+  background: #1f2937;
+}
+
+.dark .custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #4b5563;
+}
+
+.dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #6b7280;
+}
+
+/* Smooth scrolling */
+.smooth-scroll {
+  scroll-behavior: smooth;
+}
+
+/* Code detail modal styles */
+.code-detail-modal {
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.code-content {
+  max-height: 60vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Global smooth scrolling */
+* {
+  scroll-behavior: smooth;
+}
+
+/* Line clamp utilities */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Prevent horizontal scroll in cards */
+.snippet-card {
+  overflow-x: hidden;
+  word-wrap: break-word;
+  word-break: break-word;
+}
+
+/* Code preview container */
+.code-preview {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
+.code-preview pre {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-x: hidden;
+}
+
+/* Card spacing improvements */
+.card-spacing {
+  gap: 1rem;
+}
+
+.card-content-spacing > * + * {
+  margin-top: 1rem;
+}
+
+/* Fullscreen code viewer styles */
+.fullscreen-code-viewer {
+  background: #1a1a1a;
+}
+
+.fullscreen-code-viewer pre {
+  background: #1a1a1a !important;
+}
+
+.fullscreen-code-viewer .hljs {
+  background: #1a1a1a !important;
+  color: #f8f8f2 !important;
+}
+
+/* Keyboard shortcut styling */
+kbd {
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1;
+  border-radius: 0.25rem;
+  padding: 0.25rem 0.5rem;
+}
+/* Comments Section Styles */
+.comments-section {
+  margin-top: 2rem;
+}
+
+.comment-content {
+  line-height: 1.6;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  font-size: 0.875rem;
+  color: #374151;
+}
+
+.dark .comment-content {
+  color: #D1D5DB;
+}
+
+.comment-content .comment-link {
+  color: #3B82F6;
+  text-decoration: underline;
+  transition: color 0.2s ease;
+}
+
+.comment-content .comment-link:hover {
+  color: #1D4ED8;
+}
+
+.dark .comment-content .comment-link {
+  color: #60A5FA;
+}
+
+.dark .comment-content .comment-link:hover {
+  color: #93C5FD;
+}
+
+.comment-image-container {
+  margin: 0.75rem 0;
+  text-align: center;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.comment-image {
+  max-width: 100%;
+  max-height: 250px;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease;
+  cursor: pointer;
+  object-fit: cover;
+}
+
+.comment-image:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.dark .comment-image {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* Comment content formatting */
+.comment-content strong {
+  font-weight: 600;
+  color: #1F2937;
+}
+
+.dark .comment-content strong {
+  color: #F9FAFB;
+}
+
+.comment-content em {
+  font-style: italic;
+  color: #4B5563;
+}
+
+.dark .comment-content em {
+  color: #9CA3AF;
+}
+
+.comment-content code {
+  background-color: #F3F4F6;
+  color: #1F2937;
+  padding: 0.125rem 0.25rem;
+  border-radius: 0.25rem;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 0.875em;
+}
+
+.dark .comment-content code {
+  background-color: #374151;
+  color: #F9FAFB;
+}
+
+/* Comment styling improvements */
+.comments-section .comment-content p {
+  margin-bottom: 0.5rem;
+  color: inherit;
+}
+
+.comments-section .comment-content p:last-child {
+  margin-bottom: 0;
+}
+
+/* Comment card styling */
+.comment-card {
+  background: #FFFFFF;
+  border: 1px solid #E5E7EB;
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.comment-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+  border-color: #D1D5DB;
+}
+
+.dark .comment-card {
+  background: #1F2937;
+  border-color: #374151;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.dark .comment-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  border-color: #4B5563;
+}
+
+/* Comment header styling */
+.comment-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #F3F4F6;
+}
+
+.dark .comment-header {
+  border-bottom-color: #374151;
+}
+
+.comment-author {
+  font-weight: 600;
+  color: #1F2937;
+  font-size: 0.875rem;
+}
+
+.dark .comment-author {
+  color: #F9FAFB;
+}
+
+.comment-date {
+  color: #6B7280;
+  font-size: 0.75rem;
+  display: flex;
+  align-items: center;
+  margin-top: 0.25rem;
+}
+
+.dark .comment-date {
+  color: #9CA3AF;
+}
+
+.comment-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.comment-action-btn {
+  padding: 0.375rem;
+  border-radius: 0.375rem;
+  color: #6B7280;
+  transition: all 0.2s ease;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.comment-action-btn:hover {
+  background: #F3F4F6;
+  color: #374151;
+}
+
+.dark .comment-action-btn {
+  color: #9CA3AF;
+}
+
+.dark .comment-action-btn:hover {
+  background: #374151;
+  color: #D1D5DB;
+}
+
+.comment-action-btn.edit:hover {
+  background: #DBEAFE;
+  color: #1D4ED8;
+}
+
+.dark .comment-action-btn.edit:hover {
+  background: #1E3A8A;
+  color: #93C5FD;
+}
+
+.comment-action-btn.delete:hover {
+  background: #FEE2E2;
+  color: #DC2626;
+}
+
+.dark .comment-action-btn.delete:hover {
+  background: #7F1D1D;
+  color: #F87171;
+}
+
+/* Hide Bolt Badge - إخفاء شارة Bolt */
+div[style*="position: fixed"][style*="bottom: 1rem"][style*="right: 1rem"][style*="z-index: 2147483647"],
+div[style*="position:fixed"][style*="bottom:1rem"][style*="right:1rem"][style*="z-index:2147483647"],
+.bolt-badge,
+#bolt-badge,
+[class*="badge"][style*="Made in Bolt"],
+div:has(.badge:contains("Made in Bolt")),
+template[shadowrootmode="open"] + div,
+div[style*="2147483647"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  position: absolute !important;
+  left: -9999px !important;
+  top: -9999px !important;
+  width: 0 !important;
+  height: 0 !important;
+  overflow: hidden !important;
+  z-index: -1 !important;
+}
+
+/* Additional selectors for Bolt badge removal */
+div[style*="Made in Bolt"],
+span:contains("Made in Bolt"),
+*:has(span:contains("Made in Bolt")) {
+  display: none !important;
+  visibility: hidden !important;
+}

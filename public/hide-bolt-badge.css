@@ -1,0 +1,107 @@
+/* إخفاء شارة Bolt - Hide Bolt Badge */
+/* هذا الملف مخصص لإخفاء شارة "Made in Bolt" بشكل دائم */
+
+/* إخفاء العنصر الرئيسي للشارة */
+div[style*="position: fixed"][style*="bottom: 1rem"][style*="right: 1rem"][style*="z-index: 2147483647"],
+div[style*="position:fixed"][style*="bottom:1rem"][style*="right:1rem"][style*="z-index:2147483647"],
+div[style*="2147483647"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  position: absolute !important;
+  left: -9999px !important;
+  top: -9999px !important;
+  width: 0 !important;
+  height: 0 !important;
+  overflow: hidden !important;
+  z-index: -1 !important;
+}
+
+/* إخفاء الشارة بالكلاسات والمعرفات */
+.bolt-badge,
+#bolt-badge,
+[data-bolt-badge],
+.badge[style*="Made in Bolt"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+}
+
+/* إخفاء أي عنصر يحتوي على النص "Made in Bolt" */
+/* Note: :contains() is not supported in CSS, handled by JavaScript */
+
+/* إخفاء template elements مع shadow DOM */
+template[shadowrootmode="open"] {
+  display: none !important;
+}
+
+template[shadowrootmode="open"] + div {
+  display: none !important;
+  visibility: hidden !important;
+}
+
+/* إخفاء العناصر التي تحتوي على SVG مع النص */
+/* Note: :contains() is not supported in CSS, handled by JavaScript */
+
+/* إخفاء العناصر بناءً على المحتوى */
+div[class*="badge"],
+div[style*="border-radius: 8px"][style*="padding"] {
+  display: none !important;
+  visibility: hidden !important;
+}
+
+/* إخفاء العناصر المحتملة الأخرى */
+div[style*="box-shadow"][style*="padding: 8px 16px 8px 12px"] {
+  display: none !important;
+  visibility: hidden !important;
+}
+
+/* إخفاء العناصر التي تحتوي على font-family: Inter */
+div[style*="font-family: Inter"][style*="display: flex"] {
+  display: none !important;
+  visibility: hidden !important;
+}
+
+/* إخفاء العناصر مع scale: 0.8 */
+div[style*="scale: 0.8"] {
+  display: none !important;
+  visibility: hidden !important;
+}
+
+/* إخفاء العناصر التي تحتوي على dialog class */
+.dialog[style*="display: none"] {
+  display: none !important;
+  visibility: hidden !important;
+}
+
+/* إخفاء أي عنصر يحتوي على رابط bolt.new */
+a[href*="bolt.new"] {
+  display: none !important;
+  visibility: hidden !important;
+}
+
+/* إخفاء العناصر التي تحتوي على "Pro plan" */
+/* Note: :contains() is not supported in CSS, handled by JavaScript */
+
+/* إخفاء العناصر التي تحتوي على "This badge will be visible" */
+/* Note: :contains() is not supported in CSS, handled by JavaScript */
+
+/* قاعدة عامة لإخفاء أي عنصر يحتوي على كلمة Bolt */
+*[style*="Made in Bolt"] {
+  display: none !important;
+  visibility: hidden !important;
+}
+
+/* إخفاء العناصر المحتملة الأخرى */
+div[style*="position: fixed"][style*="bottom:"][style*="right:"][style*="z-index: 2147483647"] {
+  display: none !important;
+  visibility: hidden !important;
+}
+
+/* تأكيد إضافي للإخفاء */
+body
+  > div:last-child[style*="position: fixed"][style*="bottom"][style*="right"] {
+  display: none !important;
+  visibility: hidden !important;
+}
