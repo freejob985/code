@@ -105,6 +105,66 @@ Respond in JSON format:
 
     return null;
   }
+
+  async generateCommandDescription(command: string, category: string): Promise<string | null> {
+    const prompt = `Explain this command in Arabic. Be concise and clear (max 100 characters):
+
+Command: ${command}
+Category: ${category}
+
+Provide only the Arabic description without any additional text or formatting.`;
+
+    for (let attempt = 0; attempt < this.apiKeys.length; attempt++) {
+      try {
+        const apiKey = this.getNextApiKey();
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-goog-api-key': apiKey
+          },
+          body: JSON.stringify({
+            contents: [{
+              parts: [{
+                text: prompt
+              }]
+            }],
+            generationConfig: {
+              temperature: 0.7,
+              maxOutputTokens: 200
+            }
+          })
+        });
+
+        if (!response.ok) {
+          if (response.status === 429 || response.status === 403) {
+            // Rate limit or quota exceeded, try next key
+            continue;
+          }
+          throw new Error(`API Error: ${response.status}`);
+        }
+
+        const data = await response.json();
+        const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+        
+        if (!text) {
+          throw new Error('No response text received');
+        }
+
+        // Clean up the response text
+        const cleanText = text.trim().replace(/^["']|["']$/g, '').substring(0, 100);
+        return cleanText;
+
+      } catch (error) {
+        console.warn(`Gemini API attempt ${attempt + 1} failed:`, error);
+        if (attempt === this.apiKeys.length - 1) {
+          throw error;
+        }
+      }
+    }
+
+    return null;
+  }
 }
 
 export const geminiAI = new GeminiAI();

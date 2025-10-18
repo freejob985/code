@@ -10,6 +10,7 @@ import { SnippetForm } from './components/SnippetForm';
 import { FavoritesPage } from './components/FavoritesPage';
 import { Settings } from './components/Settings';
 import { CmdCommands } from './components/CmdCommands';
+import { Statistics } from './components/Statistics';
 import { CodeSnippet, Comment, Review, Tag, Category } from './types';
 import { storage } from './utils/storage';
 import { GitHubGistAPI } from './utils/thirdParty';
@@ -831,6 +832,16 @@ function App() {
           
           {currentPage === 'commands' && (
             <CmdCommands />
+          )}
+          
+          {currentPage === 'statistics' && (
+            <Statistics
+              snippets={snippets}
+              comments={comments}
+              reviews={reviews}
+              tags={tags}
+              categories={categories}
+            />
           )}
           
           {currentPage === 'settings' && (

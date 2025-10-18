@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { MessageCircle, Send, Edit, Trash2, Link, Image, Eye, EyeOff, User, Calendar, Reply, Info } from 'lucide-react';
 import { Comment } from '../types';
 import { storage } from '../utils/storage';
+import { buttonClasses } from '../utils/buttonStyles';
 import DOMPurify from 'dompurify';
 import toast from 'react-hot-toast';
 
@@ -236,7 +237,7 @@ export function CommentsSection({ snippetId, comments, onCommentsUpdate }: Comme
           <button
             onClick={handleAddComment}
             disabled={!newComment.trim() || !authorName.trim()}
-            className="flex items-center space-x-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-lg transition-colors"
+            className={`${buttonClasses.primary} flex items-center space-x-2`}
           >
             <Send className="h-4 w-4" />
             <span>Add Comment</span>
@@ -273,14 +274,14 @@ export function CommentsSection({ snippetId, comments, onCommentsUpdate }: Comme
                   <div className="comment-actions">
                     <button
                       onClick={() => startEdit(comment)}
-                      className="comment-action-btn edit"
+                      className={`${buttonClasses.iconSm} text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900`}
                       title="Edit comment"
                     >
                       <Edit className="h-4 w-4" />
                     </button>
                     <button
                       onClick={() => handleDeleteComment(comment.id)}
-                      className="comment-action-btn delete"
+                      className={`${buttonClasses.iconSm} text-red-600 hover:bg-red-50 dark:hover:bg-red-900`}
                       title="Delete comment"
                     >
                       <Trash2 className="h-4 w-4" />
@@ -300,13 +301,13 @@ export function CommentsSection({ snippetId, comments, onCommentsUpdate }: Comme
                     <div className="flex items-center space-x-2">
                       <button
                         onClick={() => handleEditComment(comment.id)}
-                        className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition-colors"
+                        className={`${buttonClasses.primarySm}`}
                       >
                         Save
                       </button>
                       <button
                         onClick={cancelEdit}
-                        className="px-3 py-1.5 bg-gray-500 hover:bg-gray-600 text-white text-sm rounded-lg transition-colors"
+                        className={`${buttonClasses.secondarySm}`}
                       >
                         Cancel
                       </button>

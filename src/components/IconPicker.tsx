@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Search, X } from 'lucide-react';
 import { AVAILABLE_ICONS, ICON_CATEGORIES, getIconsByCategory } from '../utils/icons';
+import { buttonClasses } from '../utils/buttonStyles';
 
 interface IconPickerProps {
   selectedIcon: string;
@@ -133,7 +134,7 @@ export function IconPicker({ selectedIcon, onSelect, onClose }: IconPickerProps)
           <div className="flex space-x-2">
             <button
               onClick={onClose}
-              className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+              className={buttonClasses.secondary}
             >
               Cancel
             </button>

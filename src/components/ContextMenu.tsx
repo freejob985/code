@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Copy, Edit, Trash2, Star, Upload, Eye, Download, Share } from 'lucide-react';
+import { buttonClasses } from '../utils/buttonStyles';
 
 interface ContextMenuItem {
   id: string;

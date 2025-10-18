@@ -7,6 +7,7 @@ import { FirebaseSettings } from './FirebaseSettings';
 import { useTheme } from './ThemeProvider';
 import { storage } from '../utils/storage';
 import { SUPPORTED_LANGUAGES } from '../utils/codeHighlight';
+import { buttonClasses } from '../utils/buttonStyles';
 import toast from 'react-hot-toast';
 import Swal from 'sweetalert2';
 
@@ -466,7 +467,7 @@ export function Settings({ categories, onUpdateCategories, onExportData, onImpor
           </h2>
           <button
             onClick={() => setShowFirebaseSettings(true)}
-            className="flex items-center space-x-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+            className={`${buttonClasses.primary} flex items-center space-x-2`}
           >
             <Database className="h-4 w-4" />
             <span>Database Settings</span>
@@ -516,14 +517,14 @@ export function Settings({ categories, onUpdateCategories, onExportData, onImpor
           </h2>
           <button
             onClick={handleCreateCategory}
-            className="flex items-center space-x-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+            className={`${buttonClasses.primary} flex items-center space-x-2`}
           >
             <Plus className="h-4 w-4" />
             <span>Add Category</span>
           </button>
           <button
             onClick={() => setShowBulkCategoryForm(true)}
-            className="flex items-center space-x-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
+            className={`${buttonClasses.success} flex items-center space-x-2`}
           >
             <Plus className="h-4 w-4" />
             <span>Bulk Add</span>
@@ -559,13 +560,13 @@ export function Settings({ categories, onUpdateCategories, onExportData, onImpor
                 <div className="flex items-center space-x-1">
                   <button
                     onClick={() => handleEditCategory(category)}
-                    className="p-1 text-gray-400 hover:text-blue-600 transition-colors"
+                    className={`${buttonClasses.icon} text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900`}
                   >
                     <Edit className="h-4 w-4" />
                   </button>
                   <button
                     onClick={() => handleDeleteCategory(category)}
-                    className="p-1 text-gray-400 hover:text-red-600 transition-colors"
+                    className={`${buttonClasses.icon} text-red-600 hover:bg-red-50 dark:hover:bg-red-900`}
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>
@@ -592,7 +593,7 @@ export function Settings({ categories, onUpdateCategories, onExportData, onImpor
         </p>
         <button
           onClick={handleClearAllData}
-          className="flex items-center space-x-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
+          className={`${buttonClasses.danger} flex items-center space-x-2`}
         >
           <Trash2 className="h-4 w-4" />
           <span>Clear All Data</span>
@@ -647,19 +648,19 @@ export function Settings({ categories, onUpdateCategories, onExportData, onImpor
                     <>
                       <button
                         onClick={() => handleDisconnect(provider)}
-                        className="px-3 py-1 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors"
+                        className={`${buttonClasses.dangerSm} flex items-center space-x-1`}
                       >
-                        Disconnect
+                        <span>Disconnect</span>
                       </button>
                       <button 
                         onClick={() => setShowApiSettings(true)}
-                        className="px-3 py-1 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 rounded transition-colors"
+                        className={`${buttonClasses.iconSm}`}
                       >
                         <Key className="h-4 w-4" />
                       </button>
                       <button 
                         onClick={() => handleConnect()}
-                        className="px-3 py-1 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 rounded transition-colors"
+                        className={`${buttonClasses.iconSm}`}
                       >
                         <RefreshCw className="h-4 w-4" />
                       </button>
@@ -667,7 +668,7 @@ export function Settings({ categories, onUpdateCategories, onExportData, onImpor
                   ) : (
                     <button
                       onClick={() => handleConnect()}
-                      className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition-colors"
+                      className={`${buttonClasses.primarySm}`}
                     >
                       Setup API
                     </button>
@@ -741,7 +742,7 @@ export function Settings({ categories, onUpdateCategories, onExportData, onImpor
                   <button
                     onClick={() => handleTestConnection('github')}
                     disabled={testingConnection === 'github' || !apiKeys.github.trim()}
-                    className="px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white rounded-lg transition-colors flex items-center space-x-1"
+                    className={`${buttonClasses.success} flex items-center space-x-1`}
                   >
                     {testingConnection === 'github' ? (
                       <RefreshCw className="h-4 w-4 animate-spin" />
@@ -753,7 +754,7 @@ export function Settings({ categories, onUpdateCategories, onExportData, onImpor
                   <button
                     onClick={() => handleSaveApiKey('github', apiKeys.github)}
                     disabled={!apiKeys.github.trim()}
-                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-lg transition-colors flex items-center space-x-1"
+                    className={`${buttonClasses.primary} flex items-center space-x-1`}
                   >
                     <Save className="h-4 w-4" />
                     <span>Save</span>
@@ -778,7 +779,7 @@ export function Settings({ categories, onUpdateCategories, onExportData, onImpor
             <div className="p-6 border-t border-gray-200 dark:border-gray-700 flex justify-end">
               <button
                 onClick={() => setShowApiSettings(false)}
-                className="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors"
+                className={buttonClasses.secondary}
               >
                 Close
               </button>
@@ -907,13 +908,13 @@ export function Settings({ categories, onUpdateCategories, onExportData, onImpor
             <div className="p-6 border-t border-gray-200 dark:border-gray-700 flex justify-end space-x-3">
               <button
                 onClick={() => setShowCategoryForm(false)}
-                className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                className={buttonClasses.secondary}
               >
                 Cancel
               </button>
               <button
                 onClick={handleSaveCategory}
-                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+                className={buttonClasses.primary}
               >
                 {editingCategory ? 'Save' : 'Create'}
               </button>
@@ -959,7 +960,7 @@ export function Settings({ categories, onUpdateCategories, onExportData, onImpor
                   setShowBulkCategoryForm(false);
                   setBulkCategoryText('');
                 }}
-                className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                className={buttonClasses.secondary}
               >
                 Cancel
               </button>
@@ -993,7 +994,7 @@ export function Settings({ categories, onUpdateCategories, onExportData, onImpor
                   setShowBulkCategoryForm(false);
                   setBulkCategoryText('');
                 }}
-                className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
+                className={buttonClasses.success}
               >
                 Create Categories
               </button>
@@ -1022,14 +1023,14 @@ export function Settings({ categories, onUpdateCategories, onExportData, onImpor
         <div className="flex flex-col sm:flex-row gap-4">
           <button
             onClick={handleExportData}
-            className="flex items-center justify-center space-x-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
+            className={`${buttonClasses.success} flex items-center justify-center space-x-2`}
           >
             <Download className="h-4 w-4" />
             <span>Export Data</span>
           </button>
           <button
             onClick={handleImportData}
-            className="flex items-center justify-center space-x-2 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors"
+            className={`${buttonClasses.secondary} flex items-center justify-center space-x-2`}
           >
             <Upload className="h-4 w-4" />
             <span>Import Data</span>

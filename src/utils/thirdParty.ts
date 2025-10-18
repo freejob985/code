@@ -1,5 +1,6 @@
 // Updated third-party integrations - GitHub Gist only
 import { firebaseStorage } from './firebaseStorage';
+import { getLanguageExtension } from './codeHighlight';
 
 export interface ExportResult {
   success: boolean;
@@ -10,7 +11,7 @@ export interface ExportResult {
 
 export interface ImportResult {
   success: boolean;
-  data?: any;
+  data?: unknown;
   error?: string;
 }
 
@@ -29,7 +30,8 @@ export class GitHubGistAPI {
 
   async getToken(): Promise<string> {
     if (!this.token) {
-      this.token = await firebaseStorage.getSetting('github_token') || '';
+      const savedToken = await firebaseStorage.getSetting('github_token');
+      this.token = typeof savedToken === 'string' ? savedToken : '';
     }
     return this.token;
   }
@@ -87,23 +89,7 @@ export class GitHubGistAPI {
   }
 
   private getFileExtension(language: string): string {
-    const extensions: { [key: string]: string } = {
-      javascript: 'js',
-      typescript: 'ts',
-      python: 'py',
-      java: 'java',
-      php: 'php',
-      cpp: 'cpp',
-      csharp: 'cs',
-      go: 'go',
-      rust: 'rs',
-      html: 'html',
-      css: 'css',
-      sql: 'sql',
-      json: 'json',
-      bash: 'sh',
-    };
-    return extensions[language] || 'txt';
+    return getLanguageExtension(language);
   }
 
   async updateGist(fileId: string, title: string, code: string): Promise<ExportResult> {
@@ -181,7 +167,7 @@ export class GitHubGistAPI {
       const gists = await response.json();
       return {
         success: true,
-        data: gists.map((gist: any) => ({
+        data: gists.map((gist: { id: string; files: Record<string, unknown>; description: string; html_url: string; created_at: string; updated_at: string }) => ({
           id: gist.id,
           filename: Object.keys(gist.files)[0] || 'untitled',
           description: gist.description || 'No description',

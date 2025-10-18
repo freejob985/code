@@ -1,6 +1,7 @@
 import React from 'react';
-import { Code2, Settings, BarChart3, Moon, Sun, Monitor, Star, Terminal } from 'lucide-react';
+import { Code2, Settings, BarChart3, Moon, Sun, Monitor, Star, Terminal, Activity } from 'lucide-react';
 import { useTheme } from './ThemeProvider';
+import { buttonClasses } from '../utils/buttonStyles';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -16,6 +17,7 @@ export function Layout({ children, currentPage, onNavigate }: LayoutProps) {
     { id: 'snippets', label: 'Code Snippets', icon: Code2 },
     { id: 'favorites', label: 'Favorites', icon: Star },
     { id: 'commands', label: 'CMD Commands', icon: Terminal },
+    { id: 'statistics', label: 'Statistics', icon: Activity },
     { id: 'settings', label: 'Settings', icon: Settings },
   ];
 
@@ -47,11 +49,7 @@ export function Layout({ children, currentPage, onNavigate }: LayoutProps) {
                 <button
                   key={item.id}
                   onClick={() => onNavigate(item.id)}
-                  className={`flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    currentPage === item.id
-                      ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300'
-                      : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-                  }`}
+                  className={`${buttonClasses.tab(currentPage === item.id)} flex items-center space-x-2`}
                 >
                   <item.icon className="h-4 w-4" />
                   <span>{item.label}</span>
@@ -65,10 +63,10 @@ export function Layout({ children, currentPage, onNavigate }: LayoutProps) {
                 <button
                   key={option.value}
                   onClick={() => setTheme(option.value)}
-                  className={`p-2 rounded-lg transition-colors ${
+                  className={`${buttonClasses.icon} ${
                     theme === option.value
                       ? 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400'
-                      : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-700 dark:hover:text-gray-200'
+                      : ''
                   }`}
                   title={`${option.label}${theme === option.value ? ' (Active)' : ''}`}
                 >
@@ -87,11 +85,7 @@ export function Layout({ children, currentPage, onNavigate }: LayoutProps) {
             <button
               key={item.id}
               onClick={() => onNavigate(item.id)}
-              className={`flex items-center space-x-1 px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
-                currentPage === item.id
-                  ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300'
-                  : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-              }`}
+              className={`${buttonClasses.tabSm(currentPage === item.id)} flex items-center space-x-1`}
             >
               <item.icon className="h-4 w-4" />
               <span>{item.label}</span>

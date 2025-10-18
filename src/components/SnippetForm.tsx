@@ -9,6 +9,7 @@ import { TagInput } from './TagInput';
 import { SUPPORTED_LANGUAGES } from '../utils/codeHighlight';
 import { Category } from '../types';
 import { geminiAI } from '../utils/geminiAI';
+import { buttonClasses } from '../utils/buttonStyles';
 import toast from 'react-hot-toast';
 import Swal from 'sweetalert2';
 
@@ -418,7 +419,7 @@ export function SnippetForm({ snippet, tags, categories, existingSnippets = [], 
                       key={provider}
                       type="button"
                       onClick={() => handleExport(provider)}
-                      className="flex items-center space-x-1 px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded transition-colors"
+                      className={`${buttonClasses.secondarySm} flex items-center space-x-1`}
                     >
                       <Upload className="h-3 w-3" />
                       <span>GitHub</span>
@@ -432,14 +433,14 @@ export function SnippetForm({ snippet, tags, categories, existingSnippets = [], 
               <button
                 type="button"
                 onClick={onCancel}
-                className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                className={buttonClasses.secondary}
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="flex items-center space-x-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white rounded-lg transition-colors"
+                className={`${buttonClasses.primary} flex items-center space-x-2`}
               >
                 <Save className="h-4 w-4" />
                 <span>{isSubmitting ? 'Saving...' : snippet ? 'Update' : 'Create'}</span>

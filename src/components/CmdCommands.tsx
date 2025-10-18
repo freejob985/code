@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
-import { Terminal, Search, Plus, Copy, Trash2, Bot, XCircle, Save } from 'lucide-react';
+import { Terminal, Search, Plus, Trash2, Bot, XCircle } from 'lucide-react';
 import { CmdCommand } from '../types';
 import { CMD_CATEGORIES, copyToClipboard } from '../utils/cmdCommands';
 import { storage } from '../utils/storage';
+import { buttonClasses } from '../utils/buttonStyles';
+import { geminiAI } from '../utils/geminiAI';
 import toast from 'react-hot-toast';
 import Swal from 'sweetalert2';
 
@@ -146,31 +148,49 @@ export function CmdCommands({ onClose }: CmdCommandsProps) {
     }
   };
 
-  const handleDeleteCustomCategory = async (categoryId: string) => {
-    const result = await Swal.fire({
-      title: 'Delete Category?',
-      text: 'This will also delete all commands in this category. Are you sure?',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#EF4444',
-      confirmButtonText: 'Delete',
-      cancelButtonText: 'Cancel'
-    });
+  // const handleDeleteCustomCategory = async (categoryId: string) => {
+  //   const result = await Swal.fire({
+  //     title: 'Delete Category?',
+  //     text: 'This will also delete all commands in this category. Are you sure?',
+  //     icon: 'warning',
+  //     showCancelButton: true,
+  //     confirmButtonColor: '#EF4444',
+  //     confirmButtonText: 'Delete',
+  //     cancelButtonText: 'Cancel'
+  //   });
 
-    if (result.isConfirmed) {
-      setCustomCategories(prev => prev.filter(cat => cat.id !== categoryId));
-      setCustomCommands(prev => prev.filter(cmd => cmd.category !== categoryId));
-      toast.success('Category deleted successfully!');
-    }
-  };
+  //   if (result.isConfirmed) {
+  //     setCustomCategories(prev => prev.filter(cat => cat.id !== categoryId));
+  //     setCustomCommands(prev => prev.filter(cmd => cmd.category !== categoryId));
+  //     toast.success('Category deleted successfully!');
+  //   }
+  // };
 
   const handleGenerateAIExplanation = async () => {
+    if (!newCommand.command.trim()) {
+      toast.error('Please enter a command first');
+      return;
+    }
+
     try {
-      // This would integrate with your AI service
-      // For now, we'll show a placeholder
-      toast.success('AI explanation feature coming soon!');
-    } catch {
-      toast.error('Failed to generate AI explanation');
+      const loadingToast = toast.loading('Generating AI description...');
+      
+      const description = await geminiAI.generateCommandDescription(
+        newCommand.command, 
+        newCommand.category
+      );
+      
+      toast.dismiss(loadingToast);
+      
+      if (description) {
+        setNewCommand(prev => ({ ...prev, description }));
+        toast.success('AI description generated successfully!');
+      } else {
+        toast.error('Failed to generate AI description');
+      }
+    } catch (error) {
+      console.error('AI generation error:', error);
+      toast.error('Failed to generate AI description');
     }
   };
 
@@ -198,7 +218,7 @@ export function CmdCommands({ onClose }: CmdCommandsProps) {
         {onClose && (
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+            className={`${buttonClasses.icon} text-gray-400 hover:text-gray-600 dark:hover:text-gray-300`}
           >
             <XCircle className="h-6 w-6" />
           </button>
@@ -210,21 +230,21 @@ export function CmdCommands({ onClose }: CmdCommandsProps) {
         <div className="flex items-center space-x-2">
           <button
             onClick={() => setShowCmdSearch(!showCmdSearch)}
-            className="flex items-center space-x-2 px-3 py-2 text-sm bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors"
+            className={`${buttonClasses.secondary} flex items-center space-x-2`}
           >
             <Search className="h-4 w-4" />
             <span>Search</span>
           </button>
           <button
             onClick={() => setShowAddCommandForm(true)}
-            className="flex items-center space-x-2 px-3 py-2 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+            className={`${buttonClasses.primary} flex items-center space-x-2`}
           >
             <Plus className="h-4 w-4" />
             <span>Add Command</span>
           </button>
           <button
             onClick={() => setShowAddCategoryForm(true)}
-            className="flex items-center space-x-2 px-3 py-2 text-sm bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors"
+            className={`${buttonClasses.purple} flex items-center space-x-2`}
           >
             <Plus className="h-4 w-4" />
             <span>Add Category</span>
@@ -254,11 +274,7 @@ export function CmdCommands({ onClose }: CmdCommandsProps) {
           <button
             key={category.id}
             onClick={() => setActiveCmdTab(category.id)}
-            className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${
-              activeCmdTab === category.id
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-            }`}
+            className={`${buttonClasses.tab(activeCmdTab === category.id)} flex items-center space-x-2`}
             style={activeCmdTab === category.id ? {} : { borderLeft: `4px solid ${category.color}` }}
           >
             <span className="text-lg">{category.icon}</span>
@@ -371,7 +387,7 @@ export function CmdCommands({ onClose }: CmdCommandsProps) {
                 </h3>
                 <button
                   onClick={() => setShowAddCommandForm(false)}
-                  className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+                  className={`${buttonClasses.icon} text-gray-400 hover:text-gray-600 dark:hover:text-gray-300`}
                 >
                   <XCircle className="h-5 w-5" />
                 </button>
@@ -433,12 +449,12 @@ export function CmdCommands({ onClose }: CmdCommandsProps) {
                       AI Explanation
                     </p>
                     <p className="text-xs text-blue-600 dark:text-blue-400">
-                      Generate description using AI
+                      Generate description using AI (Arabic)
                     </p>
                   </div>
                   <button
                     onClick={handleGenerateAIExplanation}
-                    className="flex items-center space-x-1 px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition-colors"
+                    className={`${buttonClasses.primarySm} flex items-center space-x-1`}
                   >
                     <Bot className="h-4 w-4" />
                     <span>Generate</span>
@@ -450,13 +466,13 @@ export function CmdCommands({ onClose }: CmdCommandsProps) {
             <div className="p-6 border-t border-gray-200 dark:border-gray-700 flex justify-end space-x-3">
               <button
                 onClick={() => setShowAddCommandForm(false)}
-                className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                className={buttonClasses.secondary}
               >
                 Cancel
               </button>
               <button
                 onClick={handleAddCustomCommand}
-                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+                className={buttonClasses.primary}
               >
                 Add Command
               </button>
@@ -477,7 +493,7 @@ export function CmdCommands({ onClose }: CmdCommandsProps) {
                 </h3>
                 <button
                   onClick={() => setShowAddCategoryForm(false)}
-                  className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+                  className={`${buttonClasses.icon} text-gray-400 hover:text-gray-600 dark:hover:text-gray-300`}
                 >
                   <XCircle className="h-5 w-5" />
                 </button>
@@ -538,13 +554,13 @@ export function CmdCommands({ onClose }: CmdCommandsProps) {
             <div className="p-6 border-t border-gray-200 dark:border-gray-700 flex justify-end space-x-3">
               <button
                 onClick={() => setShowAddCategoryForm(false)}
-                className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                className={buttonClasses.secondary}
               >
                 Cancel
               </button>
               <button
                 onClick={handleAddCustomCategory}
-                className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors"
+                className={buttonClasses.purple}
               >
                 Add Category
               </button>

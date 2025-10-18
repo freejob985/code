@@ -1,11 +1,12 @@
 import React, { useState, useMemo } from 'react';
-import { Search, Plus, Filter, Star, Globe, Lock, Eye, Edit, Trash2, Upload, Download, Copy, Share, ExternalLink, ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { Search, Plus, Star, Globe, Lock, Eye, Edit, Trash2, Upload, Copy, ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { CodeSnippet, SearchFilters, Tag, Category, Comment } from '../types';
 import { CodeEditor } from './CodeEditor';
 import { TagInput } from './TagInput';
 import { ContextMenu, useContextMenu } from './ContextMenu';
 import { CommentsSection } from './CommentsSection';
 import { SUPPORTED_LANGUAGES, LANGUAGE_CATEGORIES, getLanguageCategory, getCategoryColor, getCategoryIcon } from '../utils/codeHighlight';
+import { buttonClasses } from '../utils/buttonStyles';
 import toast from 'react-hot-toast';
 import Swal from 'sweetalert2';
 
@@ -18,7 +19,7 @@ interface SnippetListProps {
   onEditSnippet: (snippet: CodeSnippet) => void;
   onDeleteSnippet: (id: string) => void;
   onToggleFavorite: (id: string) => void;
-  onExportSnippet: (snippet: CodeSnippet, provider: string) => void;
+  onExportSnippet: (snippet: CodeSnippet, provider: string) => Promise<{ success: boolean; url?: string } | void>;
   onCommentsUpdate: (comments: Comment[]) => void;
 }
 
@@ -46,7 +47,7 @@ export function SnippetList({
   });
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  // const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [selectedSnippet, setSelectedSnippet] = useState<CodeSnippet | null>(null);
   const { contextMenu, showContextMenu, hideContextMenu } = useContextMenu();
 
@@ -210,7 +211,7 @@ export function SnippetList({
             const result = await onExportSnippet(snippet, provider);
             toast.dismiss(loadingToast);
             
-            if (result?.success && result?.url) {
+            if (result && typeof result === 'object' && 'success' in result && result.success && 'url' in result && result.url) {
               // Show success dialog with clickable link
               Swal.fire({
                 title: 'Export Successful!',
@@ -231,8 +232,8 @@ export function SnippetList({
                     <div class="bg-gray-50 dark:bg-gray-700 p-3 rounded-lg">
                       <p class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Export Link:</p>
                       <div class="export-url-code">
-                        <a href="${result.url}" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 break-all">
-                          ${result.url}
+                        <a href="${'url' in result ? result.url : '#'}" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 break-all">
+                          ${'url' in result ? result.url : ''}
                         </a>
                       </div>
                       <button onclick="navigator.clipboard.writeText('${result.url}').then(() => Swal.fire({title: 'Copied!', text: 'Link copied to clipboard', icon: 'success', timer: 2000, showConfirmButton: false}))" 
@@ -272,20 +273,20 @@ export function SnippetList({
     }
   };
 
-  const handleCopyCode = async (code: string) => {
-    try {
-      await navigator.clipboard.writeText(code);
-      toast.success('Code copied to clipboard!');
-    } catch (err) {
-      toast.error('Failed to copy code');
-    }
-  };
+  // const handleCopyCode = async (code: string) => {
+  //   try {
+  //     await navigator.clipboard.writeText(code);
+  //     toast.success('Code copied to clipboard!');
+  //   } catch (err) {
+  //     toast.error('Failed to copy code');
+  //   }
+  // };
 
   const handleCopyFullCode = async (snippet: CodeSnippet) => {
     try {
       await navigator.clipboard.writeText(snippet.code);
       toast.success('Full code copied to clipboard!');
-    } catch (err) {
+    } catch {
       toast.error('Failed to copy full code');
     }
   };
@@ -378,10 +379,10 @@ export function SnippetList({
           <button
             onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
             disabled={currentPage === 1}
-            className="flex items-center px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white transition-colors"
+            className={`${buttonClasses.secondary} flex items-center space-x-1`}
           >
-            <ChevronLeft className="h-4 w-4 mr-1" />
-            Previous
+            <ChevronLeft className="h-4 w-4" />
+            <span>Previous</span>
           </button>
           
           <div className="flex items-center space-x-1">
@@ -394,11 +395,7 @@ export function SnippetList({
                 ) : (
                   <button
                     onClick={() => setCurrentPage(page as number)}
-                    className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
-                      currentPage === page
-                        ? 'bg-blue-600 text-white shadow-sm'
-                        : 'text-gray-500 bg-white border border-gray-300 hover:bg-gray-50 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white'
-                    }`}
+                    className={`${buttonClasses.tab(currentPage === page)}`}
                   >
                     {page}
                   </button>
@@ -410,10 +407,10 @@ export function SnippetList({
           <button
             onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
             disabled={currentPage === totalPages}
-            className="flex items-center px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white transition-colors"
+            className={`${buttonClasses.secondary} flex items-center space-x-1`}
           >
-            Next
-            <ChevronRight className="h-4 w-4 ml-1" />
+            <span>Next</span>
+            <ChevronRight className="h-4 w-4" />
           </button>
         </div>
       </div>
@@ -451,7 +448,7 @@ export function SnippetList({
         </div>
         <button
           onClick={onCreateSnippet}
-          className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors shadow-sm"
+          className={`${buttonClasses.primary} flex items-center space-x-2`}
         >
           <Plus className="h-4 w-4" />
           <span>New Snippet</span>
@@ -516,7 +513,7 @@ export function SnippetList({
           {/* Sort */}
           <select
             value={filters.sortBy}
-            onChange={(e) => setFilters({ ...filters, sortBy: e.target.value as any })}
+            onChange={(e) => setFilters({ ...filters, sortBy: e.target.value as 'recent' | 'popular' | 'rated' | 'name' })}
             className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
           >
             <option value="recent">Most Recent</option>
@@ -684,28 +681,28 @@ export function SnippetList({
               <div className="flex items-center space-x-1">
                 <button
                   onClick={() => setSelectedSnippet(snippet)}
-                  className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900 rounded transition-colors"
+                  className={`${buttonClasses.icon} text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900`}
                   title="View"
                 >
                   <Eye className="h-4 w-4" />
                 </button>
                 <button
                   onClick={() => onEditSnippet(snippet)}
-                  className="p-2 text-gray-500 hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-900 rounded transition-colors"
+                  className={`${buttonClasses.icon} text-green-600 hover:bg-green-50 dark:hover:bg-green-900`}
                   title="Edit"
                 >
                   <Edit className="h-4 w-4" />
                 </button>
                 <button
                   onClick={() => handleExport(snippet)}
-                  className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900 rounded transition-colors"
+                  className={`${buttonClasses.icon} text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900`}
                   title="Export"
                 >
                   <Upload className="h-4 w-4" />
                 </button>
                 <button
                   onClick={() => handleDeleteSnippet(snippet)}
-                  className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900 rounded transition-colors"
+                  className={`${buttonClasses.icon} text-red-600 hover:bg-red-50 dark:hover:bg-red-900`}
                   title="Delete"
                 >
                   <Trash2 className="h-4 w-4" />
@@ -777,7 +774,7 @@ function SnippetDetailModal({
   onClose: () => void;
   onEdit: (snippet: CodeSnippet) => void;
   onDelete: (snippet: CodeSnippet) => void;
-  onExportSnippet: (snippet: CodeSnippet, provider: string) => void;
+  onExportSnippet: (snippet: CodeSnippet, provider: string) => Promise<{ success: boolean; url?: string } | void>;
   comments: Comment[];
   onCommentsUpdate: (comments: Comment[]) => void;
 }) {
@@ -799,7 +796,7 @@ function SnippetDetailModal({
     try {
       await navigator.clipboard.writeText(snippet.code);
       toast.success('Full code copied to clipboard!');
-    } catch (err) {
+    } catch {
       toast.error('Failed to copy code');
     }
   };
@@ -812,7 +809,7 @@ function SnippetDetailModal({
         const result = await onExportSnippet(snippet, 'gist');
         toast.dismiss(loadingToast);
         
-        if (result?.success && result?.url) {
+        if (result && typeof result === 'object' && 'success' in result && result.success && 'url' in result && result.url) {
           // Show success dialog with clickable link
           Swal.fire({
             title: 'Export Successful!',
@@ -833,8 +830,8 @@ function SnippetDetailModal({
                 <div class="bg-gray-50 dark:bg-gray-700 p-3 rounded-lg">
                   <p class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Export Link:</p>
                   <div class="export-url-code">
-                    <a href="${result.url}" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 break-all">
-                      ${result.url}
+                    <a href="${'url' in result ? result.url : '#'}" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 break-all">
+                      ${'url' in result ? result.url : ''}
                     </a>
                   </div>
                   <button onclick="navigator.clipboard.writeText('${result.url}').then(() => Swal.fire({title: 'Copied!', text: 'Link copied to clipboard', icon: 'success', timer: 2000, showConfirmButton: false}))" 
