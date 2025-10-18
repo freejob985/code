@@ -85,3 +85,22 @@ export interface Statistics {
   tagFrequency: { name: string; value: number }[];
   activityData: { date: string; created: number; updated: number; exported: number }[];
 }
+
+export interface CmdCommand {
+  id: string;
+  command: string;
+  description: string;
+  category: 'laravel' | 'django' | 'react' | 'vue' | 'node' | 'custom';
+  isCustom: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CmdCategory {
+  id: string;
+  name: string;
+  slug: string;
+  icon: string;
+  color: string;
+  commands: CmdCommand[];
+}

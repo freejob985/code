@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
-import { Github, CheckCircle, XCircle, RefreshCw, Download, Upload, Copy, Key, TestTube, Save, Eye, EyeOff, Plus, Edit, Trash2, Database } from 'lucide-react';
-import { ProviderConfig, Category } from '../types';
+import { Github, CheckCircle, XCircle, RefreshCw, Download, Upload, Copy, Key, TestTube, Save, Eye, EyeOff, Plus, Edit, Trash2, Database, Terminal, Search, Bot } from 'lucide-react';
+import { ProviderConfig, Category, CmdCommand } from '../types';
 import { ContextMenu, useContextMenu } from './ContextMenu';
 import { IconPicker } from './IconPicker';
 import { FirebaseSettings } from './FirebaseSettings';
 import { useTheme } from './ThemeProvider';
 import { storage } from '../utils/storage';
 import { SUPPORTED_LANGUAGES } from '../utils/codeHighlight';
+import { CMD_CATEGORIES, copyToClipboard } from '../utils/cmdCommands';
 import toast from 'react-hot-toast';
 import Swal from 'sweetalert2';
 
@@ -44,6 +45,18 @@ export function Settings({ categories, onUpdateCategories, onExportData, onImpor
   const [providers, setProviders] = useState<ProviderConfig[]>([
     { type: 'gist', connected: false }
   ]);
+  
+  // CMD Commands state
+  const [activeCmdTab, setActiveCmdTab] = useState<string>('laravel');
+  const [cmdSearchQuery, setCmdSearchQuery] = useState('');
+  const [showCmdSearch, setShowCmdSearch] = useState(false);
+  const [showAddCommandForm, setShowAddCommandForm] = useState(false);
+  const [customCommands, setCustomCommands] = useState<CmdCommand[]>([]);
+  const [newCommand, setNewCommand] = useState({
+    command: '',
+    description: '',
+    category: 'custom' as 'laravel' | 'django' | 'react' | 'vue' | 'node' | 'custom'
+  });
 
   // Load GitHub token on component mount
   useEffect(() => {
@@ -58,6 +71,36 @@ export function Settings({ categories, onUpdateCategories, onExportData, onImpor
     };
     loadGitHubToken();
   }, []);
+
+  // Load custom commands on component mount
+  useEffect(() => {
+    const loadCustomCommands = async () => {
+      try {
+        const savedCommands = await storage.getSetting('custom_cmd_commands');
+        if (savedCommands) {
+          setCustomCommands(JSON.parse(savedCommands));
+        }
+      } catch (error) {
+        console.error('Failed to load custom commands:', error);
+      }
+    };
+    loadCustomCommands();
+  }, []);
+
+  // Save custom commands when they change
+  useEffect(() => {
+    const saveCustomCommands = async () => {
+      try {
+        await storage.saveSetting('custom_cmd_commands', JSON.stringify(customCommands));
+      } catch (error) {
+        console.error('Failed to save custom commands:', error);
+      }
+    };
+    
+    if (customCommands.length > 0) {
+      saveCustomCommands();
+    }
+  }, [customCommands]);
 
   // Handle Escape key for API Settings Modal
   useEffect(() => {
@@ -421,6 +464,65 @@ export function Settings({ categories, onUpdateCategories, onExportData, onImpor
     gist: 'GitHub Gist'
   };
 
+  // CMD Commands handlers
+  const handleCopyCommand = async (command: string) => {
+    const success = await copyToClipboard(command);
+    if (success) {
+      toast.success('Command copied to clipboard!');
+    } else {
+      toast.error('Failed to copy command');
+    }
+  };
+
+  const handleAddCustomCommand = () => {
+    if (!newCommand.command.trim()) {
+      toast.error('Please enter a command');
+      return;
+    }
+
+    const customCommand: CmdCommand = {
+      id: `custom-${Date.now()}`,
+      command: newCommand.command,
+      description: newCommand.description || 'Custom command',
+      category: newCommand.category,
+      isCustom: true,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+
+    setCustomCommands(prev => [...prev, customCommand]);
+    setNewCommand({ command: '', description: '', category: 'custom' as 'laravel' | 'django' | 'react' | 'vue' | 'node' | 'custom' });
+    setShowAddCommandForm(false);
+    toast.success('Custom command added successfully!');
+  };
+
+  const handleDeleteCustomCommand = async (commandId: string) => {
+    const result = await Swal.fire({
+      title: 'Delete Command?',
+      text: 'Are you sure you want to delete this custom command?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#EF4444',
+      confirmButtonText: 'Delete',
+      cancelButtonText: 'Cancel'
+    });
+
+    if (result.isConfirmed) {
+      setCustomCommands(prev => prev.filter(cmd => cmd.id !== commandId));
+      toast.success('Command deleted successfully!');
+    }
+  };
+
+  const handleGenerateAIExplanation = async () => {
+    try {
+      // This would integrate with your AI service
+      // For now, we'll show a placeholder
+      toast.success('AI explanation feature coming soon!');
+    } catch {
+      toast.error('Failed to generate AI explanation');
+    }
+  };
+
   return (
     <div className="space-y-8">
       {/* Header */}
@@ -577,6 +679,179 @@ export function Settings({ categories, onUpdateCategories, onExportData, onImpor
             </div>
           ))}
         </div>
+      </div>
+
+      {/* CMD Commands Section */}
+      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
+            <Terminal className="h-5 w-5 mr-2" />
+            CMD Commands
+          </h2>
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={() => setShowCmdSearch(!showCmdSearch)}
+              className="flex items-center space-x-2 px-3 py-2 text-sm bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors"
+            >
+              <Search className="h-4 w-4" />
+              <span>Search</span>
+            </button>
+            <button
+              onClick={() => setShowAddCommandForm(true)}
+              className="flex items-center space-x-2 px-3 py-2 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+            >
+              <Plus className="h-4 w-4" />
+              <span>Add Command</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Search Bar */}
+        {showCmdSearch && (
+          <div className="mb-6">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <input
+                type="text"
+                value={cmdSearchQuery}
+                onChange={(e) => setCmdSearchQuery(e.target.value)}
+                placeholder="Search commands..."
+                className="w-full pl-10 pr-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Technology Tabs */}
+        <div className="flex flex-wrap gap-2 mb-6">
+          {CMD_CATEGORIES.map((category) => (
+            <button
+              key={category.id}
+              onClick={() => setActiveCmdTab(category.id)}
+              className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${
+                activeCmdTab === category.id
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+              }`}
+            >
+              <span className="text-lg">{category.icon}</span>
+              <span className="font-medium">{category.name}</span>
+            </button>
+          ))}
+          {/* Custom Commands Tab */}
+          <button
+            onClick={() => setActiveCmdTab('custom')}
+            className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${
+              activeCmdTab === 'custom'
+                ? 'bg-purple-600 text-white'
+                : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+            }`}
+          >
+            <span className="text-lg">⚡</span>
+            <span className="font-medium">Custom Commands</span>
+            {customCommands.length > 0 && (
+              <span className="bg-white dark:bg-gray-800 text-purple-600 dark:text-purple-400 text-xs px-2 py-1 rounded-full">
+                {customCommands.length}
+              </span>
+            )}
+          </button>
+        </div>
+
+        {/* Commands Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {(() => {
+            let allCommands: CmdCommand[] = [];
+            
+            if (activeCmdTab === 'custom') {
+              // Show only custom commands
+              allCommands = customCommands;
+            } else {
+              // Show default commands + custom commands for this category
+              const currentCategory = CMD_CATEGORIES.find(cat => cat.id === activeCmdTab);
+              allCommands = [...(currentCategory?.commands || []), ...customCommands.filter(cmd => cmd.category === activeCmdTab)];
+            }
+            
+            const filteredCommands = cmdSearchQuery 
+              ? allCommands.filter(cmd => 
+                  cmd.command.toLowerCase().includes(cmdSearchQuery.toLowerCase()) ||
+                  cmd.description.toLowerCase().includes(cmdSearchQuery.toLowerCase())
+                )
+              : allCommands;
+
+            return filteredCommands.map((command) => (
+              <div
+                key={command.id}
+                className="group relative p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+              >
+                <div className="flex items-start justify-between mb-2">
+                  <div className="flex-1 min-w-0">
+                    <code className="block text-sm font-mono text-gray-900 dark:text-gray-100 bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded mb-2 break-all">
+                      {command.command}
+                    </code>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
+                      {command.description}
+                    </p>
+                  </div>
+                  {command.isCustom && (
+                    <button
+                      onClick={() => handleDeleteCustomCommand(command.id)}
+                      className="ml-2 p-1 text-gray-400 hover:text-red-600 transition-colors opacity-0 group-hover:opacity-100"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  )}
+                </div>
+                
+                <button
+                  onClick={() => handleCopyCommand(command.command)}
+                  className="w-full mt-3 flex items-center justify-center space-x-2 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition-colors"
+                >
+                  <Copy className="h-4 w-4" />
+                  <span>Copy Command</span>
+                </button>
+              </div>
+            ));
+          })()}
+        </div>
+
+        {(() => {
+          let allCommands: CmdCommand[] = [];
+          
+          if (activeCmdTab === 'custom') {
+            allCommands = customCommands;
+          } else {
+            const currentCategory = CMD_CATEGORIES.find(cat => cat.id === activeCmdTab);
+            allCommands = [...(currentCategory?.commands || []), ...customCommands.filter(cmd => cmd.category === activeCmdTab)];
+          }
+          
+          const filteredCommands = cmdSearchQuery 
+            ? allCommands.filter(cmd => 
+                cmd.command.toLowerCase().includes(cmdSearchQuery.toLowerCase()) ||
+                cmd.description.toLowerCase().includes(cmdSearchQuery.toLowerCase())
+              )
+            : allCommands;
+
+          if (filteredCommands.length === 0) {
+            return (
+              <div className="text-center py-8">
+                <Terminal className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                <p className="text-gray-500 dark:text-gray-400">
+                  {cmdSearchQuery ? 'No commands found matching your search.' : 
+                   activeCmdTab === 'custom' ? 'No custom commands yet. Add your first command!' : 
+                   'No commands available for this category.'}
+                </p>
+                {activeCmdTab === 'custom' && (
+                  <button
+                    onClick={() => setShowAddCommandForm(true)}
+                    className="mt-4 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors"
+                  >
+                    Add Your First Command
+                  </button>
+                )}
+              </div>
+            );
+          }
+        })()}
       </div>
 
       {/* Clear All Data */}
@@ -1053,6 +1328,112 @@ export function Settings({ categories, onUpdateCategories, onExportData, onImpor
       {/* Firebase Settings Modal */}
       {showFirebaseSettings && (
         <FirebaseSettings onClose={() => setShowFirebaseSettings(false)} />
+      )}
+
+      {/* Add Command Form Modal */}
+      {showAddCommandForm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-lg max-w-md w-full">
+            <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
+                  <Bot className="h-5 w-5 mr-2" />
+                  Add Custom Command
+                </h3>
+                <button
+                  onClick={() => setShowAddCommandForm(false)}
+                  className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+                >
+                  <XCircle className="h-5 w-5" />
+                </button>
+              </div>
+            </div>
+
+            <div className="p-6 space-y-4">
+              {/* Command */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Command *
+                </label>
+                <input
+                  type="text"
+                  value={newCommand.command}
+                  onChange={(e) => setNewCommand(prev => ({ ...prev, command: e.target.value }))}
+                  placeholder="e.g., npm install package-name"
+                  className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono"
+                />
+              </div>
+
+              {/* Description */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Description
+                </label>
+                <textarea
+                  value={newCommand.description}
+                  onChange={(e) => setNewCommand(prev => ({ ...prev, description: e.target.value }))}
+                  placeholder="Enter a description for this command..."
+                  rows={3}
+                  className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+
+              {/* Category */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Category
+                </label>
+                <select
+                  value={newCommand.category}
+                  onChange={(e) => setNewCommand(prev => ({ ...prev, category: e.target.value as 'laravel' | 'django' | 'react' | 'vue' | 'node' | 'custom' }))}
+                  className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                >
+                  {CMD_CATEGORIES.map((category) => (
+                    <option key={category.id} value={category.id}>
+                      {category.icon} {category.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* AI Explanation Button */}
+              <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-blue-800 dark:text-blue-200">
+                      AI Explanation
+                    </p>
+                    <p className="text-xs text-blue-600 dark:text-blue-400">
+                      Generate description using AI
+                    </p>
+                  </div>
+                  <button
+                    onClick={handleGenerateAIExplanation}
+                    className="flex items-center space-x-1 px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition-colors"
+                  >
+                    <Bot className="h-4 w-4" />
+                    <span>Generate</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-6 border-t border-gray-200 dark:border-gray-700 flex justify-end space-x-3">
+              <button
+                onClick={() => setShowAddCommandForm(false)}
+                className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleAddCustomCommand}
+                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+              >
+                Add Command
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
